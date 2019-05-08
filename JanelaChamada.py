@@ -176,7 +176,7 @@ class JanelaChamada(Gtk.Window):
             p = Player(ip=self.__select_item__(1))
             p.run()
         elif request == "BLOCKED":
-            self.__message__("O ambiente já se em uma chamada!", self)
+            self.__message__("O ambiente já se encontra em uma chamada!", self)
         elif request == "NO":
             self.__message__("A chamada não foi aceita!", self)
         elif request == "Timeout":
