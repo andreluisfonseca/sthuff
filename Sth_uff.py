@@ -197,17 +197,22 @@ class Sth_uff(Gtk.Window):
         self.chamada = None
 
         # Is pointer over the toolbar Event box?
-        self.in_toolbar = False
+        #self.in_toolbar = True
 
         # Is pointer motion timer running?
-        self.timer = False
+        #self.timer = True
+
 
         # Time in milliseconds after point stops before toolbar is hidden
-        self.time_interval = 1500
+        #self.time_interval = 1500
 
         Gtk.Window.__init__(self,title="STH-UFF")
         self.set_default_size(800, 600)
         self.set_position(Gtk.WindowPosition.CENTER)
+
+        hb = Gtk.HeaderBar(title="STH-UFF")
+        hb.set_show_close_button(True)
+        self.set_titlebar(hb)
 
         self.connect('destroy', self.on_close)
 
@@ -216,11 +221,11 @@ class Sth_uff(Gtk.Window):
 
         # An EventBox to capture events inside Frame,
         # i.e., for the Toolbar and its child widgets.
-        ebox = Gtk.EventBox()
-        ebox.show()
-        ebox.set_above_child(True)
-        ebox.connect("enter_notify_event", self.eventbox_cb)
-        ebox.connect("leave_notify_event", self.eventbox_cb)
+        #ebox = Gtk.EventBox()
+        #ebox.show()
+        #ebox.set_above_child(True)
+        #ebox.connect("enter_notify_event", self.eventbox_cb)
+        #ebox.connect("leave_notify_event", self.eventbox_cb)
 
         #box.pack_start(ebox, False, False, 0)
 
@@ -233,48 +238,55 @@ class Sth_uff(Gtk.Window):
         icon_size = Gtk.IconSize.LARGE_TOOLBAR
         chamada_icon = Gtk.Image.new_from_icon_name("modem", icon_size)
         self.chamada_button = Gtk.ToolButton.new(chamada_icon, label="Chamadas")
+        self.chamada_button.set_can_focus(False)
         self.toolbar.insert(self.chamada_button, 0)
         self.chamada_button.connect("clicked", self.iniciar_chamada)
 
 
         # Botão de Agendamento
-        agendar_icon = Gtk.Image.new_from_icon_name("appointment-new", icon_size)
-        self.agendar_button = Gtk.ToolButton.new(agendar_icon, label="Agendar")
-        self.toolbar.insert(self.agendar_button, 1)
-        self.agendar_button.connect("clicked", self.agendar)
+        #agendar_icon = Gtk.Image.new_from_icon_name("appointment-new", icon_size)
+        #self.agendar_button = Gtk.ToolButton.new(agendar_icon, label="Agendar")
+        #self.toolbar.insert(self.agendar_button, 1)
+        #self.agendar_button.connect("clicked", self.agendar)
 
         # Botão do Perfil
-        perfil_icon = Gtk.Image.new_from_icon_name("avatar-default", icon_size)
-        self.perfil_button = Gtk.ToolButton.new(perfil_icon, label="Perfil")
-        self.toolbar.insert(self.perfil_button, 2)
-        self.perfil_button.connect("clicked", self.perfil)
+        #perfil_icon = Gtk.Image.new_from_icon_name("avatar-default", icon_size)
+        #self.perfil_button = Gtk.ToolButton.new(perfil_icon, label="Perfil")
+        #self.toolbar.insert(self.perfil_button, 2)
+        #self.perfil_button.connect("clicked", self.perfil)
 
 
         # Botão de Preferencia
         config_icon = Gtk.Image.new_from_icon_name("preferences-desktop", icon_size)
         self.config_button = Gtk.ToolButton.new(config_icon , label="Preferências")
-        self.toolbar.insert(self.config_button, 3)
+        self.toolbar.insert(self.config_button, 1)
 
         # Botão do Sobre
         about_icon = Gtk.Image.new_from_icon_name("help-about", icon_size)
         self.about_button = Gtk.ToolButton.new(about_icon, label="Sobre")
-        self.toolbar.insert(self.about_button, 4)
+        self.toolbar.insert(self.about_button, 2)
         self.about_button.connect("clicked", self.about)
 
         # Botão sair
         self.quit = Gtk.ToolButton(Gtk.STOCK_QUIT)
-        self.toolbar.insert(self.quit, 5)
+        self.toolbar.insert(self.quit, 3)
         self.quit.connect("clicked", self.on_close)
 
         frame = Gtk.Frame()
-        self.revealer = Gtk.Revealer()
+        #self.revealer = Gtk.Revealer()
         frame.add(self.toolbar)
-        self.revealer.add(frame)
-        ebox.add(self.revealer)
-        ebox.set_valign(Gtk.Align.START)
-        ebox.set_halign(Gtk.Align.CENTER)
 
-        self.connect("motion_notify_event", self.motion_notify_cb)
+        tools = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        tools.add(frame)
+        tools.set_valign(Gtk.Align.START)
+        tools.set_halign(Gtk.Align.CENTER)
+
+        #self.revealer.add(frame)
+        #ebox.add(frame)
+        #ebox.set_valign(Gtk.Align.START)
+        #ebox.set_halign(Gtk.Align.CENTER)
+
+        #self.connect("motion_notify_event", self.motion_notify_cb)
         self.connect("key-press-event", self._key_press_event)
 
         # Create a box for the DrawingArea and buttons
@@ -296,8 +308,9 @@ class Sth_uff(Gtk.Window):
 
 
         overlay.add(box)
-        overlay.add_overlay(ebox)
+        overlay.add_overlay(tools)
         overlay.show()
+
 
     def _key_press_event(self, widget, event):
         keyval = event.keyval
@@ -313,7 +326,7 @@ class Sth_uff(Gtk.Window):
 
     def run(self):
         self.show_all()
-        self.show_toolbar(False)
+        #self.show_toolbar(False)
         Gtk.main()
 
     def on_close(self, window):
@@ -321,20 +334,15 @@ class Sth_uff(Gtk.Window):
         time.sleep(0.1)
         Gtk.main_quit()
 
-    def __message__(self, data="", obj=None):
-        dialog = Gtk.MessageDialog(obj, 0, Gtk.MessageType.QUESTION,
-                                       Gtk.ButtonsType.OK, data)
-        dialog.run()
-        dialog.destroy()
-
 
     def iniciar_chamada(self,  widget):
-        self.hide()
+
         if self.chamada is None:
-            self.chamada = JanelaChamada()
+            self.chamada = JanelaChamada(self)
             self.chamada.run()
             self.chamada = None
-        self.show()
+            self.show()
+
 
     def perfil(self, widget):
         dialog = PerfilUserDialog(self)
@@ -365,7 +373,8 @@ class Sth_uff(Gtk.Window):
     def about(self, widget, data=None):
         about_dialog = Gtk.AboutDialog()
         about_dialog.set_destroy_with_parent(True)
-        about_dialog.set_position(Gtk.WindowPosition.CENTER)
+        about_dialog. set_transient_for(self)
+        about_dialog.set_position(Gtk.WindowPosition.CENTER_ON_PARENT)
         about_dialog.set_logo(GdkPixbuf.Pixbuf.new_from_file("logo.png"))
         about_dialog.set_program_name("Sistema de Teleatendimento Holográfico da UFF (STH-UFF)")
         about_dialog.set_version('01/03/2019 (Alfa)')

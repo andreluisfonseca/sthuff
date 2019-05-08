@@ -51,7 +51,7 @@ class SysTray(Gtk.StatusIcon):
 
 
     def iniciar(self,data=None):
-        JanelaLogin()
+
         if self.call is None:
             self.call = Sth_uff()
             self.call.run()
@@ -71,7 +71,7 @@ class SysTray(Gtk.StatusIcon):
         if response == Gtk.ResponseType.YES:
             self.service.kill()
             if self.call is not None:
-                self.call.on_close()
+                self.call.close()
             exit(0)
         dialog.destroy()
 

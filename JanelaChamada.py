@@ -67,14 +67,20 @@ class CadastroDialog(Gtk.Dialog):
 
 class JanelaChamada(Gtk.Window):
 
-    def __init__(self):
-        self.ambientes = Ambiente()
-        self.lista = []
+    def __init__(self,parent=None):
 
         Gtk.Window.__init__(self)
 
+        self.ambientes = Ambiente()
+        self.lista = []
+
+        self.parent = parent
+        self.set_transient_for(parent)
+        self.set_modal(True)
+
+
         self.set_default_size(300, 300)
-        self.set_position(Gtk.WindowPosition.CENTER)
+        self.set_position(Gtk.WindowPosition.CENTER_ON_PARENT)
 
         hb = Gtk.HeaderBar(title="Lista de Chamada(s)")
         hb.set_show_close_button(True)
@@ -169,14 +175,23 @@ class JanelaChamada(Gtk.Window):
             self.aceita = True
             p = Player(ip=self.__select_item__(1))
             p.run()
-        else:
-            self.__message__(request,self)
+        elif request == "BLOCKED":
+            self.__message__("O ambiente já se em uma chamada!", self)
+        elif request == "NO":
+            self.__message__("A chamada não foi aceita!", self)
+        elif request == "Timeout":
+            self.__message__("Parece que o ambiente está fora de alcance!", self)
 
-        self.show_all()
+        self.on_close()
+
         GObject.source_remove(self.id_request)
 
     def __OK__(self, widget):
+
         self.hide()
+        if self.parent is not None:
+            self.parent.hide()
+
         self.id_request = GObject.idle_add(self.__call_request)
 
     def __Cancel__(self, widget):
@@ -282,8 +297,7 @@ class JanelaChamada(Gtk.Window):
 
         dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.QUESTION,
                                    Gtk.ButtonsType.YES_NO, "Atenção!!!")
-        dialog.format_secondary_text(
-            "O Ambiente '%s' vai ser removido!" % (dados[2]))
+        dialog.format_secondary_text("O Ambiente '%s' vai ser removido!" % (dados[2]))
 
         response = dialog.run()
         msg=None
